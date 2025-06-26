@@ -1,40 +1,38 @@
 <?php
-  /**
-  * Requires the "PHP Email Form" library
-  * The "PHP Email Form" library is available only in the pro version of the template
-  * The library should be uploaded to: vendor/php-email-form/php-email-form.php
-  * For more info and help: https://bootstrapmade.com/php-email-form/
-  */
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
 
-  // Replace contact@example.com with your real receiving email address
-  $receiving_email_address = 'akilmurugan2002@gmail.com';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-  if( file_exists($php_email_form = '../assets/vendor/php-email-form/php-email-form.php' )) {
-    include( $php_email_form );
-  } else {
-    die( 'Unable to load the "PHP Email Form" Library!');
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $mail = new PHPMailer(true);
+
+    try {
+        // SMTP Configuration
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'akilmurugan2002@gmail.com'; // Your Gmail
+        $mail->Password = 'tfcelbvrnfacxtfo'; // App password
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+
+        // Email Settings
+        $mail->setFrom($_POST['email'], $_POST['name']);
+        $mail->addAddress('akilmurugan2002@gmail.com'); // Your receiving email
+        $mail->Subject = $_POST['subject'];
+        $mail->Body    = "Name: {$_POST['name']}\nEmail: {$_POST['email']}\n\nMessage:\n{$_POST['message']}";
+
+        $mail->send();
+    echo 'OK';
+
+  } catch (Exception $e) {
+    http_response_code(500);
+    echo "Mailer Error: " . $mail->ErrorInfo;
   }
-
-  $contact = new PHP_Email_Form;
-  $contact->ajax = true;
-  
-  $contact->to = $receiving_email_address;
-  $contact->from_name = $_POST['name'];
-  $contact->from_email = $_POST['email'];
-  $contact->subject = $_POST['subject'];
-
-  // Uncomment below code if you want to use SMTP to send emails. You need to enter your correct SMTP credentials
- 
-  $contact->smtp = array(
-    'host' => 'smtp.gmail.com',
-    'username' => 'akilmurugan2002@gmail.com',
-    'password' => 'tfcelbvrnfacxtfo',
-    'port' => '587'
-  );
-
-  $contact->add_message( $_POST['name'], 'From');
-  $contact->add_message( $_POST['email'], 'Email');
-  $contact->add_message( $_POST['message'], 'Message', 10);
-
-  echo $contact->send();
+}
 ?>

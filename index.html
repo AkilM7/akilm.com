@@ -391,7 +391,26 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+<script>
+  $.ajax({
+  type: "POST",
+  url: "forms/contact.php",
+  data: form.serialize(),
+  success: function(response) {
+    if (response.trim() === 'success') {
+      $('.sent-message').slideDown();
+      $('.error-message').slideUp();
+      $('.loading').slideUp();
+      $('#contact-form')[0].reset();
+    } else {
+      $('.error-message').html(response).slideDown();
+      $('.sent-message').slideUp();
+      $('.loading').slideUp();
+    }
+  }
+});
 
+</script>
 </body>
 
 </html>
